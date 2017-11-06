@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Data.SqlClient;
-using CSharpDataAccess;
 using CSharpDataAccess.Product;
 
 namespace CSharpDataAccess.Factory
@@ -11,11 +9,8 @@ namespace CSharpDataAccess.Factory
     /// <remarks>Factory Method: ConcreteCreator</remarks>
     public sealed class DataAccessHandlerFactory : IDataAccessHandlerFactory
     {
-        private IDataAccessContext dataAccessContext;
-
-        public DataAccessHandlerFactory(string stringConnection, DataProvider provider)
+        public DataAccessHandlerFactory()
         {
-            this.dataAccessContext = new DataAccessContext(stringConnection, provider);
         }
 
         public IDataAccessHandler CreateDataProvider(IDataAccessContext context)

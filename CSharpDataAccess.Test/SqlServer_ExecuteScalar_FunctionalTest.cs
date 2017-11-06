@@ -17,7 +17,7 @@ namespace CSharpDataAccess.Test
 
             var context = new DataAccessContext(ConnectionString, Provider);
 
-            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory(ConnectionString, Provider);
+            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory();
             IDataAccessHandler sql = factory.CreateDataProvider(context);
 
             //act

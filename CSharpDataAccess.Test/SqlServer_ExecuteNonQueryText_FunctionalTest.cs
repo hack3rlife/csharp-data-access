@@ -15,11 +15,11 @@ namespace CSharpDataAccess.Test
         public void ExecuteNonQueryTextTest()
         {
             // arrange
-            var context = new DataAccessContext(ConnectionString, Provider);
+            var context = new DataAccessContext(this.ConnectionString, this.Provider);
 
             var query = @"INSERT INTO [Northwind].[dbo].[Categories] ([CategoryName] ,[Description],[Picture]) VALUES ('Test Category','Test Description', 'image.png')";
 
-            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory(NwStringConnection, Provider);
+            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory();
             IDataAccessHandler sql = factory.CreateDataProvider(context);
 
             // act

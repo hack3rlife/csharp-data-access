@@ -19,7 +19,7 @@ namespace CSharpDataAccess.Test
 
             var query = @"SELECT * FROM [Northwind].[dbo].[Employees]";
 
-            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory(NwStringConnection, Provider);
+            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory();
             IDataAccessHandler sql = factory.CreateDataProvider(context);
 
             // act

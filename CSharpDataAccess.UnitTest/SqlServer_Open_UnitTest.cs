@@ -2,6 +2,7 @@ using Moq;
 using CSharpDataAccess.Factory;
 using CSharpDataAccess.Product;
 using Xunit;
+using System.Data;
 
 namespace CSharpDataAccess.UnitTest
 {
@@ -13,10 +14,14 @@ namespace CSharpDataAccess.UnitTest
         public void SqlServer_OpenConnection_Returns_True()
         {
             // arrange
-            var mockContext = new Mock<IDataAccessContext>();
-            mockContext.Setup(x => x.Open()).Returns(true);
+            var mockConnection = new Mock<IDbConnection>();
 
-            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory(_stringConnection, DataProvider.SQLServer);
+            var mockContext = new Mock<IDataAccessContext>();
+            mockContext
+                .Setup(x => x.CreateConnection())
+                .Returns(mockConnection.Object);
+
+            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory();
             IDataAccessHandler sql = factory.CreateDataProvider(mockContext.Object);
 
             // act
@@ -30,10 +35,15 @@ namespace CSharpDataAccess.UnitTest
         public void SqlServer_OpenConnection_Returns_False()
         {
             // arrange
-            var mockContext = new Mock<IDataAccessContext>();
-            mockContext.Setup(x => x.Open()).Returns(false);
+            var mockConnection = new Mock<IDbConnection>();
+            mockConnection.SetupGet(x => x.State).Returns(ConnectionState.Open);
 
-            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory(_stringConnection, DataProvider.SQLServer);
+            var mockContext = new Mock<IDataAccessContext>();
+            mockContext
+                .Setup(x => x.CreateConnection())
+                .Returns(mockConnection.Object);
+
+            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory();
             IDataAccessHandler sql = factory.CreateDataProvider(mockContext.Object);
 
             // act

@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
+using System.Data.OracleClient;
 using System.Data.SqlClient;
-using System.Text;
-using CSharpDataAccess;
+using MySql.Data.MySqlClient;
 
 namespace CSharpDataAccess
 {
@@ -19,34 +18,83 @@ namespace CSharpDataAccess
             this.DataProvider = provider;
         }
 
-        public bool Close()
-        {
-            throw new NotImplementedException();
-        }
-
         public IDbCommand CreateCommand()
         {
-            return new SqlCommand();
+            switch (this.DataProvider)
+            {
+                case DataProvider.SQLServer:
+                    return new SqlCommand();
+
+                case DataProvider.MySQL:
+                    return new SqlCommand();
+
+                case DataProvider.Oracle:
+                    return new SqlCommand();
+
+                default:
+                    return null;
+            }
         }
 
         public IDbConnection CreateConnection()
         {
-            return new SqlConnection(this.ConnectionString);
+            switch (this.DataProvider)
+            {
+                case DataProvider.SQLServer:
+                    return new SqlConnection(this.ConnectionString);
+
+                case DataProvider.MySQL:
+                    return new MySqlConnection(this.ConnectionString);
+
+                case DataProvider.Oracle:
+                    return new OracleConnection(this.ConnectionString);
+
+                default:
+                    return null;
+            }
         }
 
         public IDbDataParameter CreateParameter()
         {
-            throw new NotImplementedException();
-        }
+            switch (this.DataProvider)
+            {
+                case DataProvider.SQLServer:
+                    return new SqlParameter();
 
-        public bool Open()
-        {
-            throw new NotImplementedException();
+                case DataProvider.MySQL:
+                    return new MySqlParameter();
+
+                case DataProvider.Oracle:
+                    return new OracleParameter();
+
+                default:
+                    return null;
+            }
         }
 
         public IDbDataAdapter CreateAdapter()
         {
-            return new SqlDataAdapter();
+            switch (this.DataProvider)
+            {
+                case DataProvider.SQLServer:
+                    return new SqlDataAdapter();
+
+                case DataProvider.MySQL:
+                    throw new NotSupportedException("MySQL does not support DataAdapter");
+
+                case DataProvider.Oracle:
+                    return new OracleDataAdapter();
+
+                default:
+                    return null;
+            }
         }
+
+        //public static IDbTransaction GetTransaction(DataProvider provider)
+        //{
+        //    IDbConnection iDbConnection = GetConnection(provider);
+        //    IDbTransaction iDbTransaction = iDbConnection.BeginTransaction();
+        //    return iDbTransaction;
+        //}
     }
 }

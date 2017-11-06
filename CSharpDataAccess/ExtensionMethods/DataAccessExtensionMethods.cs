@@ -15,11 +15,10 @@ namespace CSharpDataAccess.ExtensionMethods
             try
             {
                 var objType = typeof(T);
-                ICollection<PropertyInfo> properties;
 
                 lock (_Properties)
                 {
-                    if (!_Properties.TryGetValue(objType, out properties))
+                    if (!_Properties.TryGetValue(objType, out ICollection<PropertyInfo> properties))
                     {
                         properties = objType.GetProperties().Where(property => property.CanWrite).ToList();
                         _Properties.Add(objType, properties);

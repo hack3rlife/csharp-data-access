@@ -32,7 +32,7 @@ namespace CSharpDataAccess.UnitTest
                 .Setup(x => x.CreateConnection())
                 .Returns(mockConnection.Object);
 
-            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory(_stringConnection, DataProvider.SQLServer);
+            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory();
             IDataAccessHandler sql = factory.CreateDataProvider(mockContext.Object);
 
             // act

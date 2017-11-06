@@ -42,7 +42,7 @@ namespace CSharpDataAccess.UnitTest
                 .Setup(x => x.CreateAdapter())
                 .Returns(mockAdapter.Object);
 
-            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory(_stringConnection, DataProvider.SQLServer);
+            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory();
             IDataAccessHandler sql = factory.CreateDataProvider(mockContext.Object);
 
             // act
@@ -96,7 +96,7 @@ namespace CSharpDataAccess.UnitTest
                 .Setup(x => x.CreateAdapter())
                 .Returns(mockAdapter.Object);
 
-            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory(_stringConnection, DataProvider.SQLServer);
+            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory();
             IDataAccessHandler sql = factory.CreateDataProvider(mockContext.Object);
 
             // act

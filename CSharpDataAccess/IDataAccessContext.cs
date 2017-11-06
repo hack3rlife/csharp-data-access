@@ -20,10 +20,6 @@ namespace CSharpDataAccess
 
         IDbDataParameter CreateParameter();
 
-        bool Open();
-
-        bool Close();
-
         IDbDataAdapter CreateAdapter();
     }
 }

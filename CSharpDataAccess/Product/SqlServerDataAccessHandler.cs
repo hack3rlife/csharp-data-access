@@ -30,21 +30,22 @@
             this._context = context;
         }
 
-        ///// <summary>
-        ///// Initializes a new instance of the <see cref="SqlServerDataAccessHandler"/> class.
-        ///// </summary>
-        //public SqlServerDataAccessHandler(DbConnection connection)
-        //{
-        //    this.connection = connection;
-        //}
-
         /// <summary>
         /// The Open
         /// </summary>
         /// <returns>The <see cref="bool"/></returns>
         public bool Open()
         {
-            return _context.Open();
+            using (var connection = _context.CreateConnection())
+            {
+                if (connection.State != ConnectionState.Open)
+                {
+                    connection.Open();
+                    return true;
+                }
+
+                return false;
+            }
         }
 
         /// <summary>
@@ -53,7 +54,16 @@
         /// <returns>The <see cref="bool"/></returns>
         public bool Close()
         {
-            return this._context.Close();
+            using (var connection = _context.CreateConnection())
+            {
+                if (connection.State != ConnectionState.Closed)
+                {
+                    connection.Close();
+                    return true;
+                }
+
+                return false;
+            }
         }
 
         /// <summary>
@@ -69,10 +79,7 @@
             {
                 using (var connection = _context.CreateConnection())
                 {
-                    var command = connection.CreateCommand();
-                    command.CommandText = commandText;
-                    command.CommandType = commandType;
-                    connection.Open();
+                    var command = CreateSqlCommand(commandType, commandText, null, connection);
 
                     var result = command.ExecuteScalar();
 
@@ -101,21 +108,7 @@
             {
                 using (var connection = _context.CreateConnection())
                 {
-                    var command = connection.CreateCommand();
-                    command.CommandText = commandText;
-                    command.CommandType = commandType;
-                    connection.Open();
-
-                    if (parameters != null && parameters.Any())
-                    {
-                        foreach (var param in parameters)
-                        {
-                            var parameter = command.CreateParameter();
-                            parameter.ParameterName = param.Key;
-                            parameter.Value = param.Value;
-                            command.Parameters.Add(parameter);
-                        }
-                    }
+                    var command = CreateSqlCommand(commandType, commandText, parameters, connection);
 
                     return command.ExecuteNonQuery();
                 }
@@ -138,31 +131,26 @@
         /// <returns>The <see cref="DataSet"/></returns>
         public DataSet ExecuteDataSet(CommandType commandType, string commandText, IEnumerable<KeyValuePair<string, IConvertible>> parameters = null)
         {
-            using (var connection = _context.CreateConnection())
+            try
             {
-                var command = connection.CreateCommand();
-                command.CommandText = commandText;
-                command.CommandType = commandType;
-
-                if (parameters != null && parameters.Any())
+                using (var connection = _context.CreateConnection())
                 {
-                    foreach (var param in parameters)
-                    {
-                        var parameter = command.CreateParameter();
-                        parameter.ParameterName = param.Key;
-                        parameter.Value = param.Value;
-                        command.Parameters.Add(parameter);
-                    }
+                    var command = CreateSqlCommand(commandType, commandText, parameters, connection);
+
+                    var dataSet = new DataSet();
+                    var adapter = _context.CreateAdapter();
+                    adapter.SelectCommand = command;
+                    adapter.Fill(dataSet);
+
+                    return dataSet;
                 }
-
-                var adapter = _context.CreateAdapter();
-                adapter.SelectCommand = command;
-
-                connection.Open();
-
-                var dataSet = new DataSet();
-                adapter.Fill(dataSet);
-                return dataSet;
+            }
+            catch (Exception e)
+            {
+                throw new CSharpException("", e);
+            }
+            finally
+            {
             }
         }
 
@@ -178,22 +166,7 @@
         {
             using (var connection = _context.CreateConnection())
             {
-                var command = connection.CreateCommand();
-                command.CommandText = commandText;
-                command.CommandType = commandType;
-
-                if (parameters != null && parameters.Any())
-                {
-                    foreach (var param in parameters)
-                    {
-                        var parameter = command.CreateParameter();
-                        parameter.ParameterName = param.Key;
-                        parameter.Value = param.Value;
-                        command.Parameters.Add(parameter);
-                    }
-                }
-
-                connection.Open();
+                var command = CreateSqlCommand(commandType, commandText, parameters, connection);
 
                 var reader = command.ExecuteReader(commandBehavior);
 
@@ -205,6 +178,28 @@
                         yield return (T)reader;
                 }
             }
+        }
+
+        private static IDbCommand CreateSqlCommand(CommandType commandType, string commandText, IEnumerable<KeyValuePair<string, IConvertible>> parameters, IDbConnection connection)
+        {
+            var command = connection.CreateCommand();
+            command.CommandText = commandText;
+            command.CommandType = commandType;
+
+            connection.Open();
+
+            if (parameters != null && parameters.Any())
+            {
+                foreach (var param in parameters)
+                {
+                    var parameter = command.CreateParameter();
+                    parameter.ParameterName = param.Key;
+                    parameter.Value = param.Value;
+                    command.Parameters.Add(parameter);
+                }
+            }
+
+            return command;
         }
     }
 }

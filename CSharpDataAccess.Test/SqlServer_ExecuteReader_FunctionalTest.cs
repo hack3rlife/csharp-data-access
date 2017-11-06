@@ -15,11 +15,11 @@ namespace CSharpDataAccess.Test
         public void ExecuteReaderTextTest()
         {
             // arrange
-            var context = new DataAccessContext(ConnectionString, Provider);
+            var context = new DataAccessContext(this.ConnectionString, this.Provider);
 
             var query = @"SELECT * FROM [Northwind].[dbo].[Employees]";
 
-            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory(NwStringConnection, Provider);
+            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory();
             IDataAccessHandler sql = factory.CreateDataProvider(context);
 
             // act
@@ -44,11 +44,11 @@ namespace CSharpDataAccess.Test
         public void ExecuteReaderIDataRecordTextTest()
         {
             // arrange
-            var context = new DataAccessContext(ConnectionString, Provider);
+            var context = new DataAccessContext(this.ConnectionString, this.Provider);
 
             var query = @"SELECT * FROM [Northwind].[dbo].[Employees]";
 
-            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory(NwStringConnection, Provider);
+            IDataAccessHandlerFactory factory = new DataAccessHandlerFactory();
             IDataAccessHandler sql = factory.CreateDataProvider(context);
 
             // act
