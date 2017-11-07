@@ -19,13 +19,13 @@ namespace CSharpDataAccess.Product
         ///
         /// </summary>
         /// <returns></returns>
-        bool Open();
+        bool TryOpen(out IDbConnection connection);
 
         /// <summary>
         ///
         /// </summary>
         /// <returns></returns>
-        bool Close();
+        bool TryClose(IDbConnection connection);
 
         /// <summary>
         /// Executes the query, and returns the first column of the first row in the result set returned by the query. Additional columns or rows are ignored.

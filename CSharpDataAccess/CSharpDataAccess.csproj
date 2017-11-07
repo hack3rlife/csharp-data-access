@@ -21,6 +21,7 @@
     <Compile Remove="Product\Odbc.cs" />
     <Compile Remove="Product\Oledb.cs" />
     <Compile Remove="Product\Oracle.cs" />
+    <Compile Remove="Product\SqlServerDataAccessHandler.cs" />
   </ItemGroup>
 
   <ItemGroup>

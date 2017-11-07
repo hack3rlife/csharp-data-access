@@ -3,13 +3,12 @@ using CSharpDataAccess.Product;
 using Moq;
 using Xunit;
 using System.Data;
+using System.Data.SqlClient;
 
 namespace CSharpDataAccess.UnitTest
 {
     public class SqlServer_ExecuteScalar_UnitTest
     {
-        private string _stringConnection = @"Server=myServerAddress;Database=myDataBase;Trusted_Connection=True;";
-
         [Fact]
         public void SqlServer_ExecuteScalar_Test()
         {
@@ -20,17 +19,18 @@ namespace CSharpDataAccess.UnitTest
                 .Returns("the value");
 
             var mockConnection = new Mock<IDbConnection>();
-            mockConnection
-                .Setup(x => x.CreateCommand())
-                .Returns(commandMock.Object);
-
-            mockConnection
-                .Setup(x => x.Open());
 
             var mockContext = new Mock<IDataAccessContext>();
             mockContext
+                .Setup(x => x.CreateCommand())
+                .Returns(commandMock.Object);
+
+            mockContext
                 .Setup(x => x.CreateConnection())
                 .Returns(mockConnection.Object);
+
+            mockContext.SetupSet(x => x.DataProvider = DataProvider.SQLServer);
+            mockContext.SetupGet(x => x.DataProvider).Returns(DataProvider.SQLServer);
 
             IDataAccessHandlerFactory factory = new DataAccessHandlerFactory();
             IDataAccessHandler sql = factory.CreateDataProvider(mockContext.Object);

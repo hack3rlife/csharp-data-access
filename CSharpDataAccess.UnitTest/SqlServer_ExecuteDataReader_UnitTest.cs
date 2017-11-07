@@ -12,8 +12,6 @@ namespace CSharpDataAccess.UnitTest
 {
     public class SqlServer_ExecuteDataReader_UnitTest
     {
-        private string _stringConnection = @"Server=myServerAddress;Database=myDataBase;Trusted_Connection=True;";
-
         [Fact]
         public void SqlServer_ExecuteDataReader_Test()
         {
@@ -43,20 +41,22 @@ namespace CSharpDataAccess.UnitTest
             mockCommand.SetupSet(c => c.CommandText = "GetEmployeeId");
             mockCommand.SetupSet(c => c.CommandType = CommandType.StoredProcedure);
             mockCommand.SetupGet(c => c.Parameters).Returns(mockParams.Object);
-            mockCommand
-                .Setup(p => p.CreateParameter())
-                .Returns(mockParameter.Object);
 
             mockCommand
                 .Setup(c => c.ExecuteReader(CommandBehavior.CloseConnection))
                 .Returns(mockDataReader.Object);
 
             var mockConnection = new Mock<IDbConnection>();
-            mockConnection
-                .Setup(c => c.CreateCommand())
-                .Returns(mockCommand.Object);
 
             var mockContext = new Mock<IDataAccessContext>();
+            mockContext
+                .Setup(x => x.CreateCommand())
+                .Returns(mockCommand.Object);
+
+            mockContext
+                .Setup(x => x.CreateParameter())
+                .Returns(mockParameter.Object);
+
             mockContext
                 .Setup(x => x.CreateConnection())
                 .Returns(mockConnection.Object);

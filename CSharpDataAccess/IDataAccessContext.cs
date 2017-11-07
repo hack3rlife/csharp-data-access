@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
-using System.Data.SqlClient;
-using System.Text;
-using CSharpDataAccess;
+﻿using System.Data;
 
 namespace CSharpDataAccess
 {
@@ -18,8 +12,10 @@ namespace CSharpDataAccess
 
         IDbCommand CreateCommand();
 
+        IDbDataAdapter CreateAdapter();
+
         IDbDataParameter CreateParameter();
 
-        IDbDataAdapter CreateAdapter();
+        IDbTransaction CreateTransaction();
     }
 }

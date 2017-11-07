@@ -18,16 +18,12 @@ namespace CSharpDataAccess.Factory
             switch (context.DataProvider)
             {
                 case DataProvider.SQLServer:
-                    return new SqlServerDataAccessHandler(context);
-
                 case DataProvider.MySQL:
-                    throw new NotImplementedException();
-
                 case DataProvider.Oracle:
-                    throw new NotImplementedException();
+                    return new DataAccessHandler(context);
 
                 default:
-                    return new SqlServerDataAccessHandler(context);
+                    return new DataAccessHandler(context);
             }
         }
     }

@@ -25,7 +25,7 @@ namespace CSharpDataAccess.UnitTest
             IDataAccessHandler sql = factory.CreateDataProvider(mockContext.Object);
 
             // act
-            bool condition = sql.Open();
+            bool condition = sql.TryOpen(out IDbConnection connection);
 
             // assert
             Assert.True(condition);
@@ -47,7 +47,7 @@ namespace CSharpDataAccess.UnitTest
             IDataAccessHandler sql = factory.CreateDataProvider(mockContext.Object);
 
             // act
-            bool condition = sql.Open();
+            bool condition = sql.TryOpen(out IDbConnection connection);
 
             // assert
             Assert.False(condition);

@@ -90,11 +90,9 @@ namespace CSharpDataAccess
             }
         }
 
-        //public static IDbTransaction GetTransaction(DataProvider provider)
-        //{
-        //    IDbConnection iDbConnection = GetConnection(provider);
-        //    IDbTransaction iDbTransaction = iDbConnection.BeginTransaction();
-        //    return iDbTransaction;
-        //}
+        public IDbTransaction CreateTransaction()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

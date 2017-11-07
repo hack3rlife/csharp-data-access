@@ -29,11 +29,12 @@ namespace CSharpDataAccess.UnitTest
                 .SetupSet(a => a.SelectCommand = mockCommand.Object);
 
             var mockConnection = new Mock<IDbConnection>();
-            mockConnection
-                .Setup(c => c.CreateCommand())
-                .Returns(mockCommand.Object);
 
             var mockContext = new Mock<IDataAccessContext>();
+            mockContext
+                .Setup(x => x.CreateCommand())
+                .Returns(mockCommand.Object);
+
             mockContext
                 .Setup(x => x.CreateConnection())
                 .Returns(mockConnection.Object);
@@ -41,6 +42,8 @@ namespace CSharpDataAccess.UnitTest
             mockContext
                 .Setup(x => x.CreateAdapter())
                 .Returns(mockAdapter.Object);
+
+            mockContext.SetupGet(x => x.DataProvider).Returns(DataProvider.SQLServer);
 
             IDataAccessHandlerFactory factory = new DataAccessHandlerFactory();
             IDataAccessHandler sql = factory.CreateDataProvider(mockContext.Object);
@@ -70,9 +73,6 @@ namespace CSharpDataAccess.UnitTest
             mockCommand.SetupSet(c => c.CommandText = It.IsAny<string>());
             mockCommand.SetupSet(c => c.CommandType = It.IsAny<CommandType>());
             mockCommand.SetupGet(c => c.Parameters).Returns(mockParams.Object);
-            mockCommand
-                .Setup(p => p.CreateParameter())
-                .Returns(mockParameter.Object);
 
             var mockAdapter = new Mock<IDbDataAdapter>();
             mockAdapter
@@ -83,11 +83,16 @@ namespace CSharpDataAccess.UnitTest
                 .SetupSet(a => a.SelectCommand = mockCommand.Object);
 
             var mockConnection = new Mock<IDbConnection>();
-            mockConnection
-                .Setup(c => c.CreateCommand())
-                .Returns(mockCommand.Object);
 
             var mockContext = new Mock<IDataAccessContext>();
+            mockContext
+               .Setup(x => x.CreateCommand())
+               .Returns(mockCommand.Object);
+
+            mockContext
+                .Setup(x => x.CreateParameter())
+                .Returns(mockParameter.Object);
+
             mockContext
                 .Setup(x => x.CreateConnection())
                 .Returns(mockConnection.Object);
@@ -95,6 +100,8 @@ namespace CSharpDataAccess.UnitTest
             mockContext
                 .Setup(x => x.CreateAdapter())
                 .Returns(mockAdapter.Object);
+
+            mockContext.SetupGet(x => x.DataProvider).Returns(DataProvider.SQLServer);
 
             IDataAccessHandlerFactory factory = new DataAccessHandlerFactory();
             IDataAccessHandler sql = factory.CreateDataProvider(mockContext.Object);

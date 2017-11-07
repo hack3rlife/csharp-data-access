@@ -9,7 +9,7 @@ namespace CSharpDataAccess.Product
     ///
     /// </summary>
     /// <remarks>Factory Method: Concrete Product</remarks>
-    internal class SqlServerDataAccessHandler : IDataAccessHandler
+    internal class DataAccessHandler : IDataAccessHandler
     {
         private IDataAccessContext _context;
 
@@ -22,7 +22,7 @@ namespace CSharpDataAccess.Product
         /// Initializes a new instance of the <see cref="SqlServerDataAccessHandler"/> class.
         /// </summary>
         /// <param name="stringConnection">The <see cref="string"/></param>
-        public SqlServerDataAccessHandler(IDataAccessContext context)
+        public DataAccessHandler(IDataAccessContext context)
         {
             this._context = context;
         }
@@ -106,23 +106,29 @@ namespace CSharpDataAccess.Product
         /// <param name="commandText">The <see cref="string"/></param>
         /// <param name="parameters">The <see cref="IEnumerable{KeyValuePair{string, IConvertible}}"/></param>
         /// <returns>The <see cref="int"/></returns>
+        /// <exception cref="CSharpException"></exception>
         public int ExecuteNonQuery(CommandType commandType, string commandText, IEnumerable<KeyValuePair<string, IConvertible>> parameters = null)
         {
+            IDbConnection connection = null;
+
             try
             {
-                using (var connection = _context.CreateConnection())
+                if (this.TryOpen(out connection))
                 {
                     var command = CreateSqlCommand(commandType, commandText, parameters, connection);
 
                     return command.ExecuteNonQuery();
                 }
+
+                return -1;
             }
             catch (Exception e)
             {
-                throw new CSharpException("", e);
+                throw new CSharpException("ExecuteNonQuery.Exception", e);
             }
             finally
             {
+                this.TryClose(connection);
             }
         }
 
@@ -133,28 +139,32 @@ namespace CSharpDataAccess.Product
         /// <param name="commandText">The <see cref="string"/></param>
         /// <param name="parameters">The <see cref="IEnumerable{KeyValuePair{string, IConvertible}}"/></param>
         /// <returns>The <see cref="DataSet"/></returns>
+        /// <exception cref="CSharpException"></exception>
         public DataSet ExecuteDataSet(CommandType commandType, string commandText, IEnumerable<KeyValuePair<string, IConvertible>> parameters = null)
         {
+            IDbConnection connection = null;
+            DataSet dataSet = null;
+
             try
             {
-                using (var connection = _context.CreateConnection())
+                if (this.TryOpen(out connection))
                 {
                     var command = CreateSqlCommand(commandType, commandText, parameters, connection);
 
-                    var dataSet = new DataSet();
                     var adapter = _context.CreateAdapter();
                     adapter.SelectCommand = command;
                     adapter.Fill(dataSet);
-
-                    return dataSet;
                 }
+
+                return dataSet;
             }
             catch (Exception e)
             {
-                throw new CSharpException("", e);
+                throw new CSharpException("ExecuteDataSet.Exception", e);
             }
             finally
             {
+                this.TryClose(connection);
             }
         }
 
@@ -166,25 +176,30 @@ namespace CSharpDataAccess.Product
         /// <param name="commandText">The <see cref="string"/></param>
         /// <param name="selector">The <see cref="Func{IDataRecord, T}"/></param>
         /// <returns>The <see cref="IEnumerable{T}"/></returns>
+        /// <exception cref="CSharpException"></exception>
         public IEnumerable<T> ExecuteDataReader<T>(CommandBehavior commandBehavior, CommandType commandType, string commandText, Func<IDataRecord, T> selector, IEnumerable<KeyValuePair<string, IConvertible>> parameters = null)
         {
-            using (var connection = _context.CreateConnection())
+            if (this.TryOpen(out IDbConnection connection))
             {
-                var command = CreateSqlCommand(commandType, commandText, parameters, connection);
-
-                var reader = command.ExecuteReader(commandBehavior);
-
-                while (reader.Read())
                 {
-                    if (selector != null)
-                        yield return selector(reader);
-                    else
-                        yield return (T)reader;
+                    var command = CreateSqlCommand(commandType, commandText, parameters, connection);
+
+                    var reader = command.ExecuteReader(commandBehavior);
+
+                    while (reader.Read())
+                    {
+                        if (selector != null)
+                            yield return selector(reader);
+                        else
+                            yield return (T)reader;
+                    }
                 }
+
+                this.TryClose(connection);
             }
         }
 
-        private IDbCommand CreateSqlCommand(CommandType commandType, string commandText, IEnumerable<KeyValuePair<string, IConvertible>> parameters, IDbConnection connection)
+        public IDbCommand CreateSqlCommand(CommandType commandType, string commandText, IEnumerable<KeyValuePair<string, IConvertible>> parameters, IDbConnection connection)
         {
             var command = _context.CreateCommand();
             command.CommandText = commandText;
