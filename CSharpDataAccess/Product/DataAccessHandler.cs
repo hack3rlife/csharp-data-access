@@ -27,6 +27,10 @@ namespace CSharpDataAccess.Product
             this._context = context;
         }
 
+        public DataAccessHandler()
+        {
+        }
+
         /// <summary>
         /// The Open
         /// </summary>
@@ -80,7 +84,7 @@ namespace CSharpDataAccess.Product
             {
                 if (this.TryOpen(out connection))
                 {
-                    var command = CreateSqlCommand(commandType, commandText, null, connection);
+                    var command = CreateSqlCommand(commandType, commandText, parameters: null, connection: connection);
 
                     var result = command.ExecuteScalar();
 
@@ -107,7 +111,7 @@ namespace CSharpDataAccess.Product
         /// <param name="parameters">The <see cref="IEnumerable{KeyValuePair{string, IConvertible}}"/></param>
         /// <returns>The <see cref="int"/></returns>
         /// <exception cref="CSharpException"></exception>
-        public int ExecuteNonQuery(CommandType commandType, string commandText, IEnumerable<KeyValuePair<string, IConvertible>> parameters = null)
+        public int ExecuteNonQuery(CommandType commandType, string commandText, IEnumerable<IDbDataParameter> parameters = null)
         {
             IDbConnection connection = null;
 
@@ -115,7 +119,7 @@ namespace CSharpDataAccess.Product
             {
                 if (this.TryOpen(out connection))
                 {
-                    var command = CreateSqlCommand(commandType, commandText, parameters, connection);
+                    var command = CreateDbCommand(commandType, commandText, parameters, connection);
 
                     return command.ExecuteNonQuery();
                 }
@@ -140,16 +144,16 @@ namespace CSharpDataAccess.Product
         /// <param name="parameters">The <see cref="IEnumerable{KeyValuePair{string, IConvertible}}"/></param>
         /// <returns>The <see cref="DataSet"/></returns>
         /// <exception cref="CSharpException"></exception>
-        public DataSet ExecuteDataSet(CommandType commandType, string commandText, IEnumerable<KeyValuePair<string, IConvertible>> parameters = null)
+        public DataSet ExecuteDataSet(CommandType commandType, string commandText, IEnumerable<IDbDataParameter> parameters = null)
         {
             IDbConnection connection = null;
-            DataSet dataSet = null;
+            DataSet dataSet = new DataSet();
 
             try
             {
                 if (this.TryOpen(out connection))
                 {
-                    var command = CreateSqlCommand(commandType, commandText, parameters, connection);
+                    var command = CreateDbCommand(commandType, commandText, parameters, connection);
 
                     var adapter = _context.CreateAdapter();
                     adapter.SelectCommand = command;
@@ -177,12 +181,12 @@ namespace CSharpDataAccess.Product
         /// <param name="selector">The <see cref="Func{IDataRecord, T}"/></param>
         /// <returns>The <see cref="IEnumerable{T}"/></returns>
         /// <exception cref="CSharpException"></exception>
-        public IEnumerable<T> ExecuteDataReader<T>(CommandBehavior commandBehavior, CommandType commandType, string commandText, Func<IDataRecord, T> selector, IEnumerable<KeyValuePair<string, IConvertible>> parameters = null)
+        public IEnumerable<T> ExecuteDataReader<T>(CommandBehavior commandBehavior, CommandType commandType, string commandText, Func<IDataRecord, T> selector, IEnumerable<IDbDataParameter> parameters = null)
         {
             if (this.TryOpen(out IDbConnection connection))
             {
                 {
-                    var command = CreateSqlCommand(commandType, commandText, parameters, connection);
+                    var command = CreateDbCommand(commandType, commandText, parameters, connection);
 
                     var reader = command.ExecuteReader(commandBehavior);
 
@@ -213,6 +217,31 @@ namespace CSharpDataAccess.Product
                     var parameter = _context.CreateParameter();
                     parameter.ParameterName = param.Key;
                     parameter.Value = param.Value;
+                    command.Parameters.Add(parameter);
+                }
+            }
+
+            return command;
+        }
+
+        public IDbCommand CreateDbCommand(CommandType commandType, string commandText, IEnumerable<IDbDataParameter> parameters, IDbConnection connection)
+        {
+            var command = _context.CreateCommand();
+            command.CommandText = commandText;
+            command.CommandType = commandType;
+            command.Connection = connection;
+
+            if (parameters != null && parameters.Any())
+            {
+                foreach (var param in parameters)
+                {
+                    var parameter = _context.CreateParameter();
+                    parameter.DbType = param.DbType;
+                    parameter.Direction = param.Direction;
+                    parameter.ParameterName = param.ParameterName;
+                    parameter.Size = param.Size;
+                    parameter.Value = param.Value;
+
                     command.Parameters.Add(parameter);
                 }
             }

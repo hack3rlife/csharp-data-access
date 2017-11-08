@@ -42,12 +42,13 @@ namespace CSharpDataAccess.Product
         /// Executes a Transact-SQL statement against the connection and returns the number of rows affected.
         /// </summary>
         /// <see cref="http://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlcommand.executenonquery(v=vs.100).aspx"/>
-        /// <param name="commandType"></param>
-        /// <param name="commandText"></param>
-        /// <param name="parameters"></param>
+        /// <param name="commandType">The type of query to be executed: <see cref="CommandType"/></param>
+        /// <param name="commandText">The query to be executed</param>
+        /// <param name="parameters">List of parameters</param>
         /// <returns>For UPDATE, INSERT, and DELETE statements, the return value is the number of rows affected by the command. For all other types of statements,
         /// the return value is -1. If a rollback occurs, the return value is also -1.</returns>
-        int ExecuteNonQuery(CommandType commandType, string commandText, IEnumerable<KeyValuePair<string, IConvertible>> parameters = null);
+        /// <exception cref="CSharpException"></exception>
+        int ExecuteNonQuery(CommandType commandType, string commandText, IEnumerable<IDbDataParameter> parameters = null);
 
         /// <summary>
         /// Represents a set of data commands and a database connection that are used to fill the DataSet and update a SQL Server database.
@@ -56,7 +57,7 @@ namespace CSharpDataAccess.Product
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        DataSet ExecuteDataSet(CommandType commandType, string commandText, IEnumerable<KeyValuePair<string, IConvertible>> parameters = null);
+        DataSet ExecuteDataSet(CommandType commandType, string commandText, IEnumerable<IDbDataParameter> parameters = null);
 
         /// <summary>
         /// Executes the CommandText against the Connection, and builds an IDataReader using one of the CommandBehavior values.
@@ -64,6 +65,6 @@ namespace CSharpDataAccess.Product
         /// <param name="commandBehavior"></param>
         /// <param name="commandText"></param>
         /// <returns></returns>
-        IEnumerable<T> ExecuteDataReader<T>(CommandBehavior commandBehavior, CommandType commandType, string commandText, Func<IDataRecord, T> selector, IEnumerable<KeyValuePair<string, IConvertible>> parameters = null);
+        IEnumerable<T> ExecuteDataReader<T>(CommandBehavior commandBehavior, CommandType commandType, string commandText, Func<IDataRecord, T> selector, IEnumerable<IDbDataParameter> parameters = null);
     }
 }

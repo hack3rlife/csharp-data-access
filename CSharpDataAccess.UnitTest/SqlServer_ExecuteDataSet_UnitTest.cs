@@ -10,8 +10,6 @@ namespace CSharpDataAccess.UnitTest
 {
     public class SqlServer_ExecuteDataSet_UnitTest
     {
-        private string _stringConnection = @"Server=myServerAddress;Database=myDataBase;Trusted_Connection=True;";
-
         [Fact]
         public void SqlServer_ExecuteDataSet_Test()
         {
@@ -106,8 +104,12 @@ namespace CSharpDataAccess.UnitTest
             IDataAccessHandlerFactory factory = new DataAccessHandlerFactory();
             IDataAccessHandler sql = factory.CreateDataProvider(mockContext.Object);
 
+            var dbParameterManager = new DbParameterManager(mockContext.Object);
+            var parameters = new List<IDbDataParameter>()
+            {
+                dbParameterManager.CreateParamter("Id",DbType.Int16,1)
+            };
             // act
-            var parameters = new Dictionary<string, IConvertible>() { { "@Id", 1 } };
 
             var actualResult = sql.ExecuteDataSet(CommandType.StoredProcedure, "myStoreProcedureName", parameters);
 

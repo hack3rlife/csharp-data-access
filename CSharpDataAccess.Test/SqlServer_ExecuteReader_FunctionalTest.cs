@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using System.Linq;
-using CSharpDataAccess;
 using CSharpDataAccess.Factory;
 using CSharpDataAccess.Product;
 using Xunit;

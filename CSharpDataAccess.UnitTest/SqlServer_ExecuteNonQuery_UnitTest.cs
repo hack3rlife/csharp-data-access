@@ -59,20 +59,18 @@ namespace CSharpDataAccess.UnitTest
             mockCommand.SetupSet(c => c.CommandText = "UpdateById");
             mockCommand.SetupSet(c => c.CommandType = CommandType.StoredProcedure);
             mockCommand.SetupGet(c => c.Parameters).Returns(mockParams.Object);
-            //mockCommand
-            //    .Setup(p => p.CreateParameter())
-            //    .Returns(mockParameter.Object);
 
             mockCommand
                 .Setup(c => c.ExecuteNonQuery())
                 .Returns(1);
 
             var mockConnection = new Mock<IDbConnection>();
-            //mockConnection
-            //    .Setup(c => c.CreateCommand())
-            //    .Returns(mockCommand.Object);
 
             var mockContext = new Mock<IDataAccessContext>();
+            mockContext.
+                SetupGet(c => c.DataProvider)
+                .Returns(DataProvider.SQLServer);
+
             mockContext
                .Setup(x => x.CreateCommand())
                .Returns(mockCommand.Object);
@@ -88,10 +86,15 @@ namespace CSharpDataAccess.UnitTest
             IDataAccessHandlerFactory factory = new DataAccessHandlerFactory();
             IDataAccessHandler sql = factory.CreateDataProvider(mockContext.Object);
 
-            // act
-            var parameters = new Dictionary<string, IConvertible>() { { "@Id", 1 } };
+            var dbParameterManager = new DbParameterManager(mockContext.Object);
 
-            var actualResult = sql.ExecuteNonQuery(CommandType.StoredProcedure, "UpdateById", parameters);
+            var parameters = new List<IDbDataParameter>()
+            {
+                dbParameterManager.CreateParamter("@Id", DbType.Int16, 1)
+            };
+
+            // act
+            var actualResult = sql.ExecuteNonQuery(CommandType.StoredProcedure, "UpdateById", null);
 
             // assert
             Assert.Equal<int>(1, actualResult);

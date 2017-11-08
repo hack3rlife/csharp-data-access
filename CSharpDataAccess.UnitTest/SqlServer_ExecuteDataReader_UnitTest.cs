@@ -49,6 +49,10 @@ namespace CSharpDataAccess.UnitTest
             var mockConnection = new Mock<IDbConnection>();
 
             var mockContext = new Mock<IDataAccessContext>();
+            mockContext.
+               SetupGet(c => c.DataProvider)
+               .Returns(DataProvider.SQLServer);
+
             mockContext
                 .Setup(x => x.CreateCommand())
                 .Returns(mockCommand.Object);
@@ -64,9 +68,14 @@ namespace CSharpDataAccess.UnitTest
             IDataAccessHandlerFactory factory = new DataAccessHandlerFactory();
             IDataAccessHandler sql = factory.CreateDataProvider(mockContext.Object);
 
-            // act
-            var parameters = new Dictionary<string, IConvertible>() { { "@Id", 1 } };
+            var dbParameterManager = new DbParameterManager(mockContext.Object);
 
+            var parameters = new List<IDbDataParameter>()
+            {
+                dbParameterManager.CreateParamter("@Id", DbType.Int16, 1)
+            };
+
+            // act
             var actualResult = sql.ExecuteDataReader(CommandBehavior.CloseConnection,
                 CommandType.StoredProcedure,
                 "GetEmployeeById",
