@@ -14,20 +14,28 @@ variables:
 
 steps:
 - task: DotNetCoreCLI@2
+  displayName: Build Project using configuration $(buildConfiguration)
   inputs:
     command: 'build'
     arguments: '--configuration $(buildConfiguration)'
 - task: DotNetCoreCLI@2
+  displayName: Packing project
   inputs:
     command: 'pack'
-    packagesToPack: 'CSharpDataAccess.csproj'
+    packagesToPack: '**/*.csproj'
     nobuild: true
     versioningScheme: 'byPrereleaseNumber'
     majorVersion: '1'
     minorVersion: '0'
     patchVersion: '0'
 - task: PublishBuildArtifacts@1
+  displayName: Publishing NuGet Package to $(Build.ArtifactStagingDirectory) 
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'NugetPackage'
     publishLocation: 'Container'
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact (.zip)'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+  condition: succeededOrFailed()
