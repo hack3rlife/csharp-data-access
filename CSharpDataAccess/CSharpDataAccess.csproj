@@ -3,16 +3,17 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
 	<PackageId>CSharpDataAccess</PackageId>
-    <PackageVersion>1.0.0</PackageVersion>
+    <IsPackable>true</IsPackable>
     <Authors>hack3rlife</Authors>
-    <Description>Generic Data Access for Relational Data Bases</Description>
+    <Description>C# Generic Data Access for Relational Databases using Factory Pattern</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>First release</PackageReleaseNotes>
-    <Copyright>Copyright 2017 (c)</Copyright>
-    <PackageTags>dataaccess sql</PackageTags>
+    <PackageTags>mysql; dotnet; dotnet-core; sqlserver;factory-pattern; database; data-access-layer</PackageTags>
     <AssemblyName>CSharpDataAccess</AssemblyName>
     <RootNamespace>CSharpDataAccess</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/hack3rlife/csharp-data-access</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/hack3rlife/csharp-data-access</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
