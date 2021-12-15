@@ -14,10 +14,12 @@ variables:
 
 steps:
 - task: DotNetCoreCLI@2
+  displayName: Build Project using configuration $(buildConfiguration)
   inputs:
     command: 'build'
     arguments: '--configuration $(buildConfiguration)'
 - task: DotNetCoreCLI@2
+  displayName: Packing project
   inputs:
     command: 'pack'
     packagesToPack: '**/*.csproj'
@@ -27,6 +29,7 @@ steps:
     minorVersion: '0'
     patchVersion: '0'
 - task: PublishBuildArtifacts@1
+  displayName: Publishing NuGet Package to $(Build.ArtifactStagingDirectory) 
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'NugetPackage'
