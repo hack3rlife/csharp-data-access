@@ -22,7 +22,7 @@ steps:
   displayName: Packing project
   inputs:
     command: 'pack'
-    packagesToPack: '**/*.csproj'
+    packagesToPack: '**/CSharpDataAccess.csproj'
     nobuild: true
     versioningScheme: 'byPrereleaseNumber'
     majorVersion: '1'
@@ -35,7 +35,7 @@ steps:
     ArtifactName: 'NugetPackage'
     publishLocation: 'Container'
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact (.zip)'
+  displayName: Publish Artifact (.zip) to $(build.artifactstagingdirectory)
   inputs:
     PathtoPublish: '$(build.artifactstagingdirectory)'
   condition: succeededOrFailed()
