@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+	<PackageId>CSharpDataAccess</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Authors>hack3rlife</Authors>
+    <Description>Generic Data Access for Relational Data Bases</Description>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>First release</PackageReleaseNotes>
+    <Copyright>Copyright 2017 (c)</Copyright>
+    <PackageTags>dataaccess sql</PackageTags>
+    <AssemblyName>CSharpDataAccess</AssemblyName>
+    <RootNamespace>CSharpDataAccess</RootNamespace>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Factory\SqlServerDataAccessHandlerFactory.cs" />
+    <Compile Remove="Product\MySql.cs" />
+    <Compile Remove="Product\Odbc.cs" />
+    <Compile Remove="Product\Oledb.cs" />
+    <Compile Remove="Product\Oracle.cs" />
+    <Compile Remove="Product\SqlServerDataAccessHandler.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MySql.Data" Version="8.0.9-dmr" />
+    <PackageReference Include="Npgsql" Version="3.2.5" />
+    <PackageReference Include="System.Collections" Version="4.3.0" />
+    <PackageReference Include="System.Data.Common" Version="4.3.0" />
+    <PackageReference Include="System.Data.OracleClient" Version="1.0.6" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.4.0" />
+  </ItemGroup>
+
+</Project>
