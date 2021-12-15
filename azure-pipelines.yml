@@ -20,7 +20,7 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'pack'
-    packagesToPack: 'CSharpDataAccess.csproj'
+    packagesToPack: '**/*.csproj'
     nobuild: true
     versioningScheme: 'byPrereleaseNumber'
     majorVersion: '1'
