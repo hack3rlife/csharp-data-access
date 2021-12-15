@@ -34,3 +34,8 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'NugetPackage'
     publishLocation: 'Container'
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact (.zip)'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+  condition: succeededOrFailed()
